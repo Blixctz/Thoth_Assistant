@@ -1,16 +1,11 @@
 import streamlit as st
 from openai import OpenAI
-from dotenv import load_dotenv
-import os
 
 # Set page config (must be first)
 st.set_page_config(page_title="Thoth Assistant", layout="centered")
 
-# Load environment variables
-load_dotenv()
-
 # Password protection
-CORRECT_PASSWORD = os.getenv("THOTH_SECRET")
+CORRECT_PASSWORD = st.secrets["THOTH_SECRET"]
 password = st.text_input("Enter your passphrase", type="password")
 if password != CORRECT_PASSWORD:
     st.warning("Access denied.")
@@ -19,20 +14,8 @@ if password != CORRECT_PASSWORD:
 # Title
 st.title("🧠 Thoth Assistant with Memory")
 
-# Load environment variables
-load_dotenv()
-
-# Load OpenAI API key from .env (locally) or secrets (cloud)
-api_key = os.getenv("OPENAI_API_KEY")
-
-if not api_key:
-    try:
-        api_key = st.secrets["OPENAI_API_KEY"]
-    except Exception as e:
-        st.error("No OpenAI API key found. Please set it in .env or Streamlit Secrets.")
-        st.stop()
-
-# Initialize OpenAI client
+# Use Streamlit Secrets (for cloud)
+api_key = st.secrets["OPENAI_API_KEY"]
 client = OpenAI(api_key=api_key)
 
 # Initialize memory if it doesn't exist
